@@ -28,9 +28,18 @@ jobs:
               -H "Content-Type: application/json" \
               -d "$json")
 
-            content=$(echo "$response" | jq -r '.choices[0].message.content')
+            echo "Full API response:"
+            echo "$response"
+
+            content=$(echo "$response" | jq -r '.choices[0].message.content // "⚠️ No content returned from API. Check your API key, model access, or usage limits."')
+
             base=$(basename "$file" .txt)
-            echo "$content" > k8s-issues/$base.md
+
+            if [[ "$content" == "null" || -z "$content" ]]; then
+              echo "⚠️ OpenAI API returned null or no content." > k8s-issues/$base.md
+            else
+              echo "$content" > k8s-issues/$base.md
+            fi
           done
 
       - name: Commit and Push Markdown Output
@@ -40,4 +49,3 @@ jobs:
           git add k8s-issues/*.md
           git commit -m "📝 Format K8s issue(s) via ChatGPT"
           git push
-
