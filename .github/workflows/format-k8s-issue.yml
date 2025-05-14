@@ -21,7 +21,7 @@ jobs:
             raw=$(cat "$file" | sed 's/"/\\"/g')  # Escape double quotes for JSON
 
             json=$(jq -n --arg content "$raw" \
-              '{model:"gpt-4", messages:[{role:"user", content:"Format the following Kubernetes issue into a Markdown summary with headings like Problem, Root Cause, Resolution, and Recommendation:\n\n\($content)"}], temperature:0.2}')
+              '{model:"gpt-3.5-turbo", messages:[{role:"user", content:"Format the following Kubernetes issue into a Markdown summary with headings like Problem, Root Cause, Resolution, and Recommendation:\n\n\($content)"}], temperature:0.2}')
 
             response=$(curl -s https://api.openai.com/v1/chat/completions \
               -H "Authorization: Bearer ${{ secrets.OPENAI_API_KEY }}" \
